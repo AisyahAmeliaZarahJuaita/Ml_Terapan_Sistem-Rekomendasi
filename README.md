@@ -199,7 +199,7 @@ Matriks cosine_sim_df kemudian digunakan dalam fungsi tourism_recommendations() 
 
 ## Collaborative Filtering
 
-1. Proses Encoding userID dan placeID
+1. Encoding userID dan placeID
 
 Sebelum digunakan dalam model pembelajaran, kolom userID dan placeID dikonversi menjadi representasi numerik menggunakan dictionary encoding:
 
@@ -209,11 +209,11 @@ Sebelum digunakan dalam model pembelajaran, kolom userID dan placeID dikonversi 
 
 Proses encoding ini penting karena model embedding hanya dapat memproses input numerik, bukan string atau ID kategori.
 
-2. Proses Normalisasi Rating
+2. Normalisasi Rating
 
 Nilai Place_Ratings awalnya berada dalam rentang 1 hingga 5. Agar lebih stabil dalam proses pelatihan neural network, nilai ini dinormalisasi ke rentang 0 hingga 1. Hal ini mencegah bias terhadap rating tinggi dan membantu model belajar secara lebih merata.
 
-3. Proses Training dan Validation
+3. Training dan Validation
 
 Dataset kemudian dibagi menjadi:
 
