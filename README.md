@@ -165,37 +165,209 @@ Pada tahap ini menggabungkan data pengguna (user) dengan data rating dan informa
 
 Tahapan ini memeriksa apakah terdapat nilai yang hilang (missing values) dalam dataset gabungan `all_data`. Hasilnya menunjukkan bahwa tidak ada missing value di semua kolom, sehingga data lengkap dan siap digunakan untuk analisis atau pemodelan tanpa perlu penanganan data kosong lebih lanjut.
 
-## Content Development Content Based Filtering
+## Content Based Filtering
 
 1. TF-IDF Vectorizer
-   
-   - Pada tahap ini menggunakan TfidfVectorizer untuk mengubah data kategori tempat wisata 
-     menjadi representasi numerik berdasarkan frekuensi dan pentingnya kata (TF-IDF). Setelah 
-     dilakukan fitting pada kolom category, dihasilkan daftar fitur unik berupa kata-kata yang 
-     membentuk kategori, seperti 'budaya', 'taman', 'hiburan', dll. Fitur ini bisa digunakan 
-     untuk analisis teks atau pemodelan lebih lanjut.
 
-   - Mengubah data kategori wisata dari tourism_new['category'] menjadi matriks TF-IDF 
-     menggunakan fit_transform. Matriks ini merepresentasikan 437 tempat wisata (baris) dan 10 
-     kata fitur unik (kolom) yang dihasilkan sebelumnya. Jadi, ukuran matriks (437, 10) 
-     menunjukkan ada 437 dokumen (tempat wisata) dan 10 fitur kata unik kategori yang dipakai 
-     untuk analisis lebih lanjut.
+Kolom category dari dataset tourism_new diubah menjadi representasi numerik menggunakan teknik TF-IDF (Term Frequency - Inverse Document Frequency) dengan bantuan TfidfVectorizer dari Scikit-learn.
 
-   - Pada tahapan ini yaitu mengubah matriks TF-IDF yang sebelumnya dalam format sparse matrix 
-     menjadi matriks dense (penuh) menggunakan .todense(). Outputnya adalah matriks numerik 
-     lengkap yang menampilkan bobot TF-IDF setiap fitur kategori untuk setiap tempat wisata. 
-     Nilai-nilai di dalam matriks menunjukkan seberapa penting suatu kata (kategori) dalam 
-     deskripsi tiap tempat wisata, dengan angka 0 artinya kata tersebut tidak muncul pada 
-     kategori tersebut.
+- Langkah-langkah yang dilakukan:
 
-   - Untuk tahapan ini  sebuah DataFrame dari matriks TF-IDF yang telah dihitung sebelumnya, di 
-     mana kolom-kolomnya merepresentasikan kategori wisata (fitur TF-IDF) dan baris-barisnya 
-     adalah nama-nama tempat wisata. Kemudian, kode tersebut mengambil sampel acak sebanyak 22 
-     kolom dan 10 baris untuk menampilkan sebagian data secara acak, sehingga memudahkan dalam 
-     melihat representasi bobot kategori pada beberapa tempat wisata secara ringkas.
+  1. Inisialisasi objek TfidfVectorizer.
+  2. Melakukan fit dan transform terhadap kolom category untuk menghasilkan matriks TF-IDF yang 
+     merepresentasikan kategori tempat wisata sebagai vektor.
+  3. Matriks TF-IDF ini menunjukkan seberapa penting suatu kata (kategori) dalam konteks 
+     seluruh data tempat wisata.
+  4. Matriks hasil transformasi kemudian dikonversi menjadi bentuk dense (padat) agar dapat 
+     divisualisasikan dan dianalisis.
 
 2. Cosine Similarity
 
-   
+Setelah diperoleh matriks TF-IDF, dilakukan perhitungan cosine similarity untuk mengukur tingkat kemiripan antar destinasi wisata berdasarkan vektor kategori mereka.
 
+- Langkah-langkahnya:
+  
+  1. Menggunakan cosine_similarity() dari sklearn.metrics.pairwise untuk menghitung nilai 
+     kemiripan antar baris dalam matriks TF-IDF.
+  2. Hasil perhitungan disimpan dalam cosine_sim, yaitu matriks berukuran jumlah tempat wisata  
+     jumlah tempat wisata yang menyatakan seberapa mirip dua tempat satu sama lain.
+  3. Matriks ini dikonversi ke dalam bentuk DataFrame (cosine_sim_df) dengan label baris dan 
+     kolom berupa nama tempat wisata, sehingga dapat digunakan untuk pencarian berdasarkan nama 
+     destinasi.
+
+Matriks cosine_sim_df kemudian digunakan dalam fungsi tourism_recommendations() yang dapat memberikan rekomendasi destinasi wisata yang mirip dengan tempat yang dicari pengguna. Sebagai contoh, ketika pengguna memasukkan nama "Kampung Wisata Taman Sari", sistem akan mengembalikan 5 destinasi teratas yang memiliki nilai kemiripan tertinggi berdasarkan kategorinya.
+
+## Collaborative Filtering
+
+1. Proses Encoding userID dan placeID
+
+Sebelum digunakan dalam model pembelajaran, kolom userID dan placeID dikonversi menjadi representasi numerik menggunakan dictionary encoding:
+
+   - userID diubah menjadi user melalui pemetaan dictionary (user_to_user_encoded).
+   
+   - placeID diubah menjadi place melalui pemetaan dictionary (place_to_place_encoded).
+
+Proses encoding ini penting karena model embedding hanya dapat memproses input numerik, bukan string atau ID kategori.
+
+2. Proses Normalisasi Rating
+
+Nilai Place_Ratings awalnya berada dalam rentang 1 hingga 5. Agar lebih stabil dalam proses pelatihan neural network, nilai ini dinormalisasi ke rentang 0 hingga 1. Hal ini mencegah bias terhadap rating tinggi dan membantu model belajar secara lebih merata.
+
+3. Proses Training dan Validation
+
+Dataset kemudian dibagi menjadi:
+
+- 80% data pelatihan
+
+- 20% data validasi
+
+Tujuannya adalah untuk memastikan bahwa model tidak hanya belajar dari data yang sudah pernah dilihat, tapi juga diuji kemampuannya pada data baru.
+
+4. Model Embedding: RecommenderNet
+
+Model rekomendasi didefinisikan menggunakan TensorFlow dengan arsitektur embedding:
+
+   - Masing-masing pengguna dan tempat wisata di-embed ke dalam vektor berdimensi 50.
+   - Dot product antara vektor user dan place menentukan skor prediksi.
+   - Model juga memanfaatkan bias untuk masing-masing entitas.
+   - Aktivasi sigmoid digunakan di akhir untuk membatasi prediksi dalam rentang 0–1.
+
+5. Pelatihan Model
+
+Model dilatih menggunakan fungsi loss BinaryCrossentropy dan metrik RootMeanSquaredError (RMSE) untuk mengukur kesalahan prediksi. Model dilatih selama 50 epoch dengan batch size 8.
+
+# Modeling
+
+1. Content Based Filtering
+
+- Modeling:
+
+  1. Menggunakan informasi deskriptif berupa kategori dari setiap tempat wisata (category).
+  2. Diterapkan teknik TF-IDF Vectorization untuk mengubah kategori tempat wisata menjadi 
+     representasi numerik.
+  3. Kemudian digunakan cosine similarity untuk menghitung tingkat kemiripan antar destinasi 
+     berdasarkan vektor TF-IDF-nya.
+  4. Model akan memberikan Top-N rekomendasi tempat wisata yang paling mirip dengan tempat yang 
+     dipilih pengguna.
+
+- Hasil Output:
+
+Ketika pengguna memilih “Kampung Wisata Taman Sari”, sistem akan menampilkan 5 tempat wisata lain yang memiliki kategori serupa.
+
+![Gambar](images/1.png)
+
+- Kelebihan
+  1. Tidak memerlukan data rating pengguna.
+  2. Cocok untuk sistem dengan jumlah pengguna yang masih sedikit.
+  3. Interpretatif: dapat diketahui alasan tempat direkomendasikan (karena kemiripan kategori).
+     
+- Kekurangan
+  1. Tidak mempertimbangkan preferensi personal pengguna.
+  2. Rekomendasi hanya berdasarkan konten, sehingga tidak bisa menyesuaikan selera unik tiap 
+     individu.
+     
+2. Collaborative Filtering
+
+- Modeling:
+  1. Menggunakan data interaksi antara pengguna (userID) dan tempat wisata (placeID) dalam 
+     bentuk rating.
+  2. Setiap userID dan placeID diencoding ke format numerik.
+  3. Model neural network dengan embedding layer dibangun menggunakan TensorFlow/Keras untuk 
+     mempelajari representasi dari user dan tempat wisata.
+  4. Digunakan fungsi dot product untuk memprediksi skor kecocokan antara user dan destinasi.
+
+- Hasil Output:
+  1. Sistem menghasilkan Top-10 tempat wisata yang belum pernah dikunjungi oleh user, 
+     berdasarkan prediksi rating tertinggi.
+  2. Rekomendasi disesuaikan dengan preferensi pengguna berdasarkan riwayat interaksinya.
+
+![Gambar](images/2.png)
+
+-  Kelebihan
+   1. Menghasilkan rekomendasi yang lebih personal sesuai dengan pola pengguna.
+   2. Bisa menemukan destinasi yang menarik bagi user walaupun tidak mirip secara konten.
+
+- Kekurangan
+  1. Membutuhkan banyak data interaksi pengguna agar akurat.
+  2. Rentan terhadap cold-start problem untuk pengguna baru atau destinasi baru yang belum 
+     memiliki rating.
+
+# Evaluation
+
+Pada proyek ini menggunakan dua model yaitu Content Based Filtering dan Collaborative Filtering.
+
+1. Metrik Evaluasi yang digunakan: 
+
+Model sistem rekomendasi berbasis Collaborative Filtering dievaluasi menggunakan metrik:
+
+- Root Mean Squared Error (RMSE)
+Metrik ini digunakan untuk mengukur seberapa jauh prediksi rating dari model terhadap rating sebenarnya.
+
+RMSE adalah turunan dari Mean Squared Error (MSE) dan sangat umum digunakan dalam masalah regresi dan sistem rekomendasi berbasis rating.
+
+2. Formula RMSE
+
+![Gambar](images/3.png)
+
+Keterangan:
+
+![Gambar](images/4.png)
+
+3. Hasil Evaluasi Model
+
+Model training menggunakan data x_train dan y_train, dan divalidasi dengan x_val dan y_val. Proses training dilakukan selama 50 epoch, dan performa model dipantau menggunakan RMSE pada data training dan validasi.
+
+Berdasarkan hasil plot yang ditampilkan dalam notebook:
+
+- RMSE pada training set menunjukkan penurunan stabil selama epoch berlangsung, menandakan 
+  model belajar dari data.
+- RMSE pada validation set juga menunjukkan performa yang stabil, tanpa overfitting yang 
+  signifikan.
+
+![Gambar](images/5.png)
+
+- Penjelasan:
+
+1. Deskripsi:
+   
+Grafik menunjukkan nilai Root Mean Squared Error (RMSE) pada data train dan test (validasi) selama 50 epoch pelatihan model:
+
+- Sumbu X: Jumlah epoch (iterasi pelatihan).
+
+- Sumbu Y: Nilai RMSE.
+
+- Garis biru: RMSE pada data training.
+
+- Garis oranye: RMSE pada data validasi (test set).
+
+2. Interpretasi:
+
+   - Training Error (RMSE - Biru):
+     1. Menurun secara signifikan dari sekitar 0.345 ke sekitar 0.312 selama pelatihan.
+     2. Menunjukkan bahwa model berhasil mempelajari pola dari data training secara efektif.
+
+   - Validation Error (RMSE - Oranye):
+     1. Awalnya mirip dengan training error, namun cenderung naik setelah beberapa epoch awal.
+     2. Mulai dari 0.345 dan meningkat hingga sekitar 0.362 di akhir pelatihan.
+     3. Fenomena ini merupakan indikasi overfitting, yaitu model terlalu menyesuaikan diri 
+        dengan data training, sehingga kemampuan generalisasi terhadap data baru menurun.
+
+# Evaluasi Terhadap Business Understanding
+
+- Kesesuaian dengan Problem Statement
+
+Problem statements yang diajukan sangat relevan dengan domain pariwisata, khususnya dalam konteks personalisasi pengalaman pengguna melalui sistem rekomendasi. Permasalahan yang ingin diselesaikan yakni bagaimana merekomendasikan tempat wisata yang sesuai dengan preferensi pengguna dapat dipecahkan secara teknis melalui dua pendekatan utama yang digunakan dalam notebook yaitu content-based filtering dan collaborative filtering. 
+
+- Kesesuian dengan Goals
+
+Seluruh tujuan proyek berhasil dicapai dengan baik. Sistem rekomendasi tempat wisata berhasil dikembangkan dan dijalankan menggunakan dataset nyata. Dua pendekatan utama, yaitu content-based filtering dan collaborative filtering, telah berhasil diterapkan untuk memberikan variasi solusi. Selain itu, sistem mampu menghasilkan output rekomendasi Top-N destinasi wisata yang sesuai berdasarkan input atau preferensi pengguna.
+
+
+- Solusi
+
+Dengan rekomendasi yang lebih relevan dan terpersonalisasi, pengguna dapat menjelajahi destinasi wisata yang sesuai dengan minat mereka, sehingga meningkatkan kualitas pengalaman pengguna dan kepuasan dalam merencanakan perjalanan. Pendekatan ini juga membuka peluang bagi platform wisata untuk meningkatkan keterlibatan pengguna dan retensi aplikasi.
+
+# Kesimpulan
+
+Proyek ini berhasil membangun sistem rekomendasi tempat wisata menggunakan dua pendekatan: content-based filtering dan collaborative filtering. Content-based filtering memanfaatkan informasi kategori destinasi untuk mengukur kesamaan antar tempat menggunakan TF-IDF dan cosine similarity, sedangkan collaborative filtering memanfaatkan data interaksi pengguna dan tempat wisata melalui pendekatan matrix factorization. Kedua metode berhasil menghasilkan rekomendasi Top-N yang relevan dan personal. Evaluasi menggunakan Root Mean Squared Error (RMSE) menunjukkan bahwa model collaborative filtering cukup akurat, meskipun terdapat potensi overfitting pada data validasi. Secara keseluruhan, sistem ini memberikan solusi efektif untuk membantu pengguna menemukan destinasi wisata sesuai preferensi mereka.
 
