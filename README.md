@@ -342,15 +342,15 @@ Grafik menunjukkan nilai Root Mean Squared Error (RMSE) pada data train dan test
 
 2. Interpretasi:
 
-   - Training Error (RMSE - Biru):
-     1. Menurun secara signifikan dari sekitar 0.345 ke sekitar 0.312 selama pelatihan.
-     2. Menunjukkan bahwa model berhasil mempelajari pola dari data training secara efektif.
+- Training Error (RMSE - Biru):
+   1. Menurun secara signifikan dari sekitar 0.345 ke sekitar 0.312 selama pelatihan.
+   2. Menunjukkan bahwa model berhasil mempelajari pola dari data training secara efektif.
 
-   - Validation Error (RMSE - Oranye):
-     1. Awalnya mirip dengan training error, namun cenderung naik setelah beberapa epoch awal.
-     2. Mulai dari 0.345 dan meningkat hingga sekitar 0.362 di akhir pelatihan.
-     3. Fenomena ini merupakan indikasi overfitting, yaitu model terlalu menyesuaikan diri 
-        dengan data training, sehingga kemampuan generalisasi terhadap data baru menurun.
+- Validation Error (RMSE - Oranye):
+   1. Awalnya mirip dengan training error, namun cenderung naik setelah beberapa epoch awal.
+   2. Mulai dari 0.345 dan meningkat hingga sekitar 0.362 di akhir pelatihan.
+   3. Fenomena ini merupakan indikasi overfitting, yaitu model terlalu menyesuaikan diri 
+      dengan data training, sehingga kemampuan generalisasi terhadap data baru menurun.
 
 # Evaluasi Terhadap Business Understanding
 
