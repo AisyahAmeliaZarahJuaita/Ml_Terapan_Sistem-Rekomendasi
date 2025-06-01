@@ -305,15 +305,7 @@ Metrik ini digunakan untuk mengukur seberapa jauh prediksi rating dari model ter
 
 RMSE adalah turunan dari Mean Squared Error (MSE) dan sangat umum digunakan dalam masalah regresi dan sistem rekomendasi berbasis rating.
 
-2. Formula RMSE
-
-![Gambar](images/3.png)
-
-Keterangan:
-
-![Gambar](images/4.png)
-
-3. Hasil Evaluasi Model
+2. Hasil Evaluasi Model
 
 Model training menggunakan data x_train dan y_train, dan divalidasi dengan x_val dan y_val. Proses training dilakukan selama 50 epoch, dan performa model dipantau menggunakan RMSE pada data training dan validasi.
 
