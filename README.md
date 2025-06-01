@@ -66,27 +66,27 @@ Proyek ini menggunakan dataset Travel Recommendation System yang tersedia di Kag
 
 Pada bagian ini Dataset tourism_rating berisi data interaksi antara pengguna dan tempat wisata dalam bentuk rating. Setiap baris merepresentasikan satu penilaian yang diberikan oleh pengguna (User_Id) terhadap suatu destinasi wisata (Place_Id) dengan skor tertentu pada kolom Place_Ratings.
 
-  "tourism_rating.info()"
+   "tourism_rating.info()"
   
 Hasil dari tourism_rating.info() menunjukkan bahwa dataset terdiri dari 10.000 baris dan 3 kolom: User_Id, Place_Id, dan Place_Ratings. Semua kolom bertipe data int64 dan tidak memiliki missing value (nilai kosong). Ini berarti data bersih dan siap digunakan untuk analisis atau pelatihan model rekomendasi tanpa perlu proses imputasi atau pembersihan tambahan.
 
 - Tourism Variabel
 
-  "tourism.head()"
+   "tourism.head()"
 
 Dataset `tourism` berisi informasi detail tentang destinasi wisata. Setiap baris merepresentasikan satu tempat wisata, dengan kolom-kolom seperti `Place_Id` (ID tempat), `Place_Name` (nama tempat), `Description` (deskripsi), `Category` (jenis wisata), `City` (kota), `Price` (harga tiket), `Rating` (nilai rating umum), `Time_Minutes` (perkiraan durasi kunjungan), serta koordinat geografis (`Lat` dan `Long`). Terdapat juga kolom `Coordinate` dalam format dictionary, dan dua kolom tambahan (`Unnamed: 11` dan `Unnamed: 12`) yang tampaknya tidak terpakai atau hasil dari proses ekspor. Data ini penting untuk sistem rekomendasi berbasis konten karena menyediakan fitur-fitur yang bisa digunakan untuk mengukur kemiripan antar tempat wisata.
 
-  "tourism.info()"
+   "tourism.info()"
 
 Hasil `tourism.info()` menunjukkan bahwa dataset memiliki 437 entri dan 13 kolom. Sebagian besar kolom terisi penuh, kecuali `Time_Minutes` yang hanya memiliki 205 nilai (mengandung banyak missing value) dan `Unnamed: 11` yang seluruhnya kosong. Kolom seperti `Place_Id`, `Place_Name`, `Description`, `Category`, dan `City` menyimpan informasi utama tentang tempat wisata, sedangkan `Price`, `Rating`, `Lat`, dan `Long` memberikan data numerik terkait lokasi dan preferensi. Kolom `Unnamed: 11` sebaiknya dihapus karena tidak mengandung informasi. Dataset ini cocok digunakan untuk analisis konten destinasi wisata dan visualisasi lokasi.
 
 - User Variabel
 
-  "user.head()"
+   "user.head()"
 
 Dataset `user` berisi informasi tentang pengguna yang memberikan rating pada tempat wisata. Setiap baris mencakup `User_Id` (ID unik pengguna), `Location` (asal kota dan provinsi), serta `Age` (usia pengguna). Data ini berguna untuk analisis demografis dan dapat dimanfaatkan dalam sistem rekomendasi berbasis pengguna (collaborative filtering) atau untuk personalisasi rekomendasi berdasarkan lokasi dan usia.
 
-  "user.info()"
+   "user.info()"
 
 Hasil `user.info()` menunjukkan bahwa dataset berisi 300 entri dengan 3 kolom: `User_Id`, `Location`, dan `Age`. Semua kolom memiliki data lengkap (tidak ada missing value). `User_Id` dan `Age` bertipe numerik (`int64`), sementara `Location` bertipe teks (`object`). Dataset ini bersih dan siap digunakan untuk analisis atau pemodelan, terutama dalam sistem rekomendasi berbasis pengguna atau segmentasi berdasarkan lokasi dan usia.
 
