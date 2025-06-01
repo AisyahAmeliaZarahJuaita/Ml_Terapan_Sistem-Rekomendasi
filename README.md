@@ -298,8 +298,6 @@ Pada proyek ini menggunakan dua model yaitu Content Based Filtering dan Collabor
 
 1. Metrik Evaluasi yang digunakan: 
 
-Model sistem rekomendasi berbasis Collaborative Filtering dievaluasi menggunakan metrik:
-
 - Root Mean Squared Error (RMSE)
 Metrik ini digunakan untuk mengukur seberapa jauh prediksi rating dari model terhadap rating sebenarnya.
 
