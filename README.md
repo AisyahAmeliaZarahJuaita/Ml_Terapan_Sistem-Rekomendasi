@@ -1,5 +1,5 @@
-## Laporan Proyek Machine Learning - Aisyah Amelia Zarah Juaita
+# Laporan Proyek Machine Learning - Aisyah Amelia Zarah Juaita
 
-## Project Overview
+# Project Overview
 
-#Latar Belakang
+## Latar Belakang
